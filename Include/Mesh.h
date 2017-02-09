@@ -68,6 +68,7 @@ public:
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    /* Draw the mesh with the supplied texture */
     void Draw(Shader shader)
     {
         GLint colourLocation = glGetUniformLocation(shader.getShaderProgram(), "baseColour");

@@ -13,6 +13,7 @@
 struct Vertex
 {
     GLdouble position[3];
+    GLdouble normal[3];
     GLfloat textureCoords[2];
 };
 

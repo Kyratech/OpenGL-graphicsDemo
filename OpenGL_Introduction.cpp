@@ -78,6 +78,7 @@ int main(void)
 
     /* Load the shader program */
 	Shader textureShader("Shaders/TexturedDefault.vert", "Shaders/TexturedDefault.frag");
+	Shader phongShader("Shaders/UntexturedPhong.vert", "Shaders/UntexturedPhong.frag");
 
 	/* Create a cube object*/
     GLfloat red[3] = {1.0f, 1.0f, 1.0f};
@@ -93,7 +94,7 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		textureShader.Use();
+        textureShader.Use();
 
 		/* Generate the view matrix */
 		glm::mat4 view;
