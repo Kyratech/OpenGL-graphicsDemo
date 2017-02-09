@@ -14,10 +14,14 @@
 */
 const std::vector<struct Vertex> GetSpherePhong(int segments, int rings, double radius)
 {
+    /* Minimum of 3 segments and 3 rings */
+    if(segments < 3) segments = 3;
+    if(rings < 3) rings = 3;
+
     std::vector<struct Vertex> vertices;
 
-    double ringAngle = 180.0f / segments;
-    double segmentAngle = 360.0f / rings;
+    double ringAngle = 180.0f / rings;
+    double segmentAngle = 360.0f / segments;
 
     /*
      * NB: rn is the nth line of latitude, starting at the top

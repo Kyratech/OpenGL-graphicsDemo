@@ -86,7 +86,7 @@ int main(void)
 
 	/* Create a cube object*/
     GLfloat red[3] = {1.0f, 1.0f, 1.0f};
-    Mesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", red);
+    Mesh cubeMesh(GetSpherePhong(5, 10, 1.0), "Images/crate.png", red);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
