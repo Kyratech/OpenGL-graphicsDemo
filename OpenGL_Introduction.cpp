@@ -10,7 +10,7 @@
 #include "Include/BLCamera.h"
 
 /* Screen parameters */
-const int width = 800;
+const int width = 1200;
 const int height = 600;
 
 /* Functions to handle input */
@@ -64,7 +64,7 @@ int main(void)
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	/*Draw wireframes */
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	/* Set up GLEW before using any OpenGL functions */
 	glewExperimental = GL_TRUE;
@@ -86,7 +86,7 @@ int main(void)
 
 	/* Create a cube object*/
     GLfloat red[3] = {1.0f, 1.0f, 1.0f};
-    Mesh cubeMesh(GetSpherePhong(5, 10, 1.0), "Images/crate.png", red);
+    Mesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", red);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */

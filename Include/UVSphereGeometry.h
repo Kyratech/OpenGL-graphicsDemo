@@ -99,7 +99,7 @@ const std::vector<struct Vertex> GetSpherePhong(int segments, int rings, double 
 
             vertices.push_back(rjbi2);
             vertices.push_back(rj2bi2);
-            vertices.push_back(rj2bi2);
+            vertices.push_back(rj2bi);
 
             std::cout << "r" << j << "b" << i << ":(" << rjbiX << ","  << rjbiY << "," << rjbiZ << ")" << std::endl;
             //Oh god, this is more code than I had hoped
