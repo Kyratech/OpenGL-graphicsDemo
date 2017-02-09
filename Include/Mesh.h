@@ -11,7 +11,7 @@ class Mesh
 {
 public:
     /* Constructor */
-    Mesh(const std::vector<Vertex> vertices, const GLchar* texturePath, GLfloat colour[3])
+    Mesh(const std::vector<struct Vertex> vertices, const GLchar* texturePath, GLfloat colour[3])
     {
         vertexCount = vertices.size();
         r = colour[0];

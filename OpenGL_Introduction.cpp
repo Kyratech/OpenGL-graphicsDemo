@@ -4,6 +4,7 @@
 
 #include "Include/CubeGeometry.h"
 #include "Include/PlaneGeomtery.h"
+#include "Include/UVSphereGeometry.h"
 #include "Include/Mesh.h"
 #include "Include/GraphicsObject.h"
 #include "Include/BLCamera.h"
@@ -62,6 +63,9 @@ int main(void)
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
+	/*Draw wireframes */
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	/* Set up GLEW before using any OpenGL functions */
 	glewExperimental = GL_TRUE;
 	if(glewInit() != GLEW_OK)
@@ -82,7 +86,7 @@ int main(void)
 
 	/* Create a cube object*/
     GLfloat red[3] = {1.0f, 1.0f, 1.0f};
-    Mesh cubeMesh(GetCubeGeometry(), "Images/crate.png", red);
+    Mesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", red);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
@@ -94,7 +98,7 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        textureShader.Use();
+        phongShader.Use();
 
 		/* Generate the view matrix */
 		glm::mat4 view;
@@ -103,7 +107,7 @@ int main(void)
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Fov), (GLfloat)width / (GLfloat)width, 0.1f, 100.0f);
 
-		cubeObject.Draw(textureShader, view, projection);
+		cubeObject.Draw(phongShader, view, projection);
 
 		glfwSwapBuffers(window);
 	}
@@ -153,8 +157,6 @@ void mouse_movement(GLFWwindow *window, double xPos, double yPos)
 	//Difference between current moose position and previous
 	GLfloat deltaX = xPos - lastX;
 	GLfloat deltaY = lastY - yPos;
-
-	std::cout << deltaX << "," << deltaY << std::endl;
 
 	//Update previous
 	lastX = xPos;

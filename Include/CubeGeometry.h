@@ -3,10 +3,10 @@
 
 #include "Introduction.h"
 
-const std::vector<Vertex> GetCubeGeometry()
+const std::vector<struct Vertex> GetCubeGeometry()
 {
     //Vertices forming a 2D square made up of two triangles
-	const std::vector<Vertex> vertices =
+	const std::vector<struct Vertex> vertices =
 	{
 		{{-0.5f, -0.5f, -0.5f},     {0.0f, 0.0f, -1.0f},    {0.0f, 0.0f}},
 		{{0.5f, -0.5f, -0.5f},      {0.0f, 0.0f, -1.0f},    {1.0f, 0.0f}},
