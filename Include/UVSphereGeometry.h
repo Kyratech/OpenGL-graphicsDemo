@@ -135,4 +135,41 @@ const std::vector<struct Vertex> GetSpherePhong(int segments, int rings, double 
     return vertices;
 }
 
+const std::vector<struct Vertex> GetSphereNormalLines(int segments, int rings, double radius, float normalLength)
+{
+    /* Minimum of 3 segments and 3 rings */
+    if(segments < 3) segments = 3;
+    if(rings < 3) rings = 3;
+
+    std::vector<struct Vertex> vertices;
+
+    double ringAngle = 180.0f / rings;
+    double segmentAngle = 360.0f / segments;
+
+    //Top point
+    vertices.push_back({{0.0, radius, 0.0},   {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+    vertices.push_back({{0.0, radius + normalLength, 0.0},   {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+    //Rings
+    for(int j = 1; j < rings; j++)
+    {
+        double theta = glm::radians(90 - (j * ringAngle)); //theta(j)
+        for(int i = 0; i < segments; i++)
+        {
+            double phi = glm::radians(i * segmentAngle); //phi(i)
+
+            glm::vec3 point = glm::vec3(radius * cos(theta) * cos(phi), radius * sin(theta), radius * cos(theta) * sin(phi));
+            glm::vec3 normal = glm::normalize(point);
+            glm::vec3 normalend = point + normal * normalLength;
+
+            vertices.push_back({{point.x, point.y, point.z},    {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+            vertices.push_back({{normalend.x, normalend.y, normalend.z},    {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+        }
+    }
+    //Bottom point
+    vertices.push_back({{0.0, -radius, 0.0},   {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+    vertices.push_back({{0.0, -radius - normalLength, 0.0},   {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+
+    return vertices;
+}
+
 #endif // UV_SPHERE_H

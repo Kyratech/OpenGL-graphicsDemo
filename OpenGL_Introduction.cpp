@@ -5,13 +5,14 @@
 #include "Include/CubeGeometry.h"
 #include "Include/PlaneGeomtery.h"
 #include "Include/UVSphereGeometry.h"
-#include "Include/Mesh.h"
+#include "Include/TriangleMesh.h"
+#include "Include/LineArray.h"
 #include "Include/GraphicsObject.h"
 #include "Include/BLCamera.h"
 
 /* Screen parameters */
-const int width = 1200;
-const int height = 600;
+const int width = 800;
+const int height = 800;
 
 /* Functions to handle input */
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -64,7 +65,7 @@ int main(void)
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	/*Draw wireframes */
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	/* Set up GLEW before using any OpenGL functions */
 	glewExperimental = GL_TRUE;
@@ -84,10 +85,24 @@ int main(void)
 	Shader textureShader("Shaders/TexturedDefault.vert", "Shaders/TexturedDefault.frag");
 	Shader phongShader("Shaders/UntexturedPhong.vert", "Shaders/UntexturedPhong.frag");
 
+    /* Some colours to use later */
+    GLfloat red[3] = {1.0f, 0.0f, 0.0f};
+    GLfloat green[3] = {0.0f, 1.0f, 0.0f};
+    GLfloat blue[3] = {0.0f, 0.0f, 1.0f};
+    GLfloat white[3] = {1.0f, 1.0f, 1.0f};
+
 	/* Create a cube object*/
-    GLfloat red[3] = {1.0f, 1.0f, 1.0f};
-    Mesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", red);
+    TriangleMesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", white);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
+
+    /*const std::vector<struct Vertex> twoLinesV = {
+		{{-0.5f, -0.0f, 0.0f},  {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, -0.0f, 0.0f},   {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+		{{-0.7f, -0.5f, 0.0f},   {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+		{{0.7f, 0.5f, 0.0f},    {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	};*/
+    Lines twoLines(GetSphereNormalLines(10, 10, 1.0, 0.2), red);
+    GraphicsObject linesObject(&twoLines, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
 	while(!glfwWindowShouldClose(window))
@@ -108,6 +123,7 @@ int main(void)
 		projection = glm::perspective(glm::radians(camera.Fov), (GLfloat)width / (GLfloat)width, 0.1f, 100.0f);
 
 		cubeObject.Draw(phongShader, view, projection);
+        linesObject.Draw(phongShader, view, projection);
 
 		glfwSwapBuffers(window);
 	}
