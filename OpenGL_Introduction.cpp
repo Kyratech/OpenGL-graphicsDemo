@@ -2,6 +2,10 @@
 #include <iostream>
 #include <vector>
 
+//GUI
+#include "Include/ImGUI/imgui.h"
+#include "Include/ImGUI/imgui_impl_glfw_gl3.h"
+
 #include "Include/CubeGeometry.h"
 #include "Include/PlaneGeomtery.h"
 #include "Include/UVSphereGeometry.h"
@@ -19,6 +23,13 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 void mouse_movement(GLFWwindow *window, double xPos, double yPos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xpos, double ypos);
+
+/* Scene render functions */
+void renderSphere(GraphicsObject sphere, Shader shader, glm::mat4 view, glm::mat4 projection);
+void renderSphereNormals(GraphicsObject sphere, GraphicsObject normals, Shader shader, glm::mat4 view, glm::mat4 projection);
+void renderShadedSphere(GraphicsObject sphere, Shader shader, glm::mat4 view, glm::mat4 projection);
+void renderAnimation(Shader shader, glm::mat4 view, glm::mat4 projection);
+void renderTexturedBox(Shader shader, glm::mat4 view, glm::mat4 projection);
 
 /* Stuff to read the mouse input to move the camera */
 GLfloat lastX = width / 2.0;
@@ -64,9 +75,6 @@ int main(void)
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	/*Draw wireframes */
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	/* Set up GLEW before using any OpenGL functions */
 	glewExperimental = GL_TRUE;
 	if(glewInit() != GLEW_OK)
@@ -81,6 +89,10 @@ int main(void)
 	/* Turn on depth testing to make stuff in front actually look like it's in front. */
 	glEnable(GL_DEPTH_TEST);
 
+    /* Set up ImGUI*/
+	ImGui_ImplGlfwGL3_Init(window, false);
+	bool show_guiWindow = true;
+
     /* Load the shader program */
 	Shader textureShader("Shaders/TexturedDefault.vert", "Shaders/TexturedDefault.frag");
 	Shader phongShader("Shaders/UntexturedPhong.vert", "Shaders/UntexturedPhong.frag");
@@ -91,29 +103,51 @@ int main(void)
     GLfloat blue[3] = {0.0f, 0.0f, 1.0f};
     GLfloat white[3] = {1.0f, 1.0f, 1.0f};
 
-	/* Create a cube object*/
-    TriangleMesh cubeMesh(GetSpherePhong(10, 10, 1.0), "Images/crate.png", white);
-    GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
+	/* Create a sphere object*/
+	int segments = 10;
+	int rings = 10;
+	double radius = 1.0;
+    TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
+    GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
+    /* Create the normals object for the sphere */
+    Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.2), red);
+    GraphicsObject sphereNormalsObject(&sphereNormalsMesh, glm::vec3(0.0f), glm::quat());
 
-    /*const std::vector<struct Vertex> twoLinesV = {
-		{{-0.5f, -0.0f, 0.0f},  {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, -0.0f, 0.0f},   {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-		{{-0.7f, -0.5f, 0.0f},   {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-		{{0.7f, 0.5f, 0.0f},    {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	};*/
-    Lines twoLines(GetSphereNormalLines(10, 10, 1.0, 0.2), red);
-    GraphicsObject linesObject(&twoLines, glm::vec3(0.0f), glm::quat());
+    /* Create a textured box */
+    TriangleMesh cubeMesh(GetCubeGeometry(), "Images/crate.png", white);
+    GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
 	while(!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
+		/*ImGUI UI code*/
+		ImGui_ImplGlfwGL3_NewFrame();
+
+		ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+		ImGui::Begin("Menu", &show_guiWindow);
+
+		ImGui::Text("Scene selection");
+
+		static int e = 0;
+        ImGui::RadioButton("A: Sphere", &e, 0);
+        ImGui::RadioButton("B: Sphere normals", &e, 1);
+        ImGui::RadioButton("C: Shaded sphere", &e, 2);
+        ImGui::RadioButton("D: Animated scene", &e, 3);
+        ImGui::RadioButton("E: Textured box", &e, 4);
+
+		if (ImGui::Button("Reset camera"))
+		{
+			//TODO: reset camera
+		}
+
+		ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
+		ImGui::End();
+
 		/* Rendering commands */
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //Black
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        phongShader.Use();
 
 		/* Generate the view matrix */
 		glm::mat4 view;
@@ -122,8 +156,29 @@ int main(void)
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Fov), (GLfloat)width / (GLfloat)width, 0.1f, 100.0f);
 
-		cubeObject.Draw(phongShader, view, projection);
-        linesObject.Draw(phongShader, view, projection);
+		switch(e)
+		{
+        case 0:
+            /*Draw wireframes */
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            phongShader.Use();
+            sphereObject.Draw(phongShader, view, projection);
+            break;
+        case 1:
+            /*Draw wireframes */
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            phongShader.Use();
+            sphereObject.Draw(phongShader, view, projection);
+            sphereNormalsObject.Draw(phongShader, view, projection);
+            break;
+        case 4:
+            textureShader.Use();
+            cubeObject.Draw(textureShader, view, projection);
+		}
+
+        // ImGui functions end here
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		ImGui::Render();
 
 		glfwSwapBuffers(window);
 	}
