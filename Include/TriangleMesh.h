@@ -84,7 +84,7 @@ public:
 private:
     GLuint VAO, VBO, texture;
     int vertexCount;
-    uint8_t r,g,b;
+    GLfloat r,g,b;
 };
 
 #endif // MESH_H

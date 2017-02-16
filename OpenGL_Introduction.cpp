@@ -24,12 +24,8 @@ void mouse_movement(GLFWwindow *window, double xPos, double yPos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xpos, double ypos);
 
-/* Scene render functions */
-void renderSphere(GraphicsObject sphere, Shader shader, glm::mat4 view, glm::mat4 projection);
-void renderSphereNormals(GraphicsObject sphere, GraphicsObject normals, Shader shader, glm::mat4 view, glm::mat4 projection);
-void renderShadedSphere(GraphicsObject sphere, Shader shader, glm::mat4 view, glm::mat4 projection);
-void renderAnimation(Shader shader, glm::mat4 view, glm::mat4 projection);
-void renderTexturedBox(Shader shader, glm::mat4 view, glm::mat4 projection);
+/* Render functions */
+void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::mat4 view, glm::mat4 projection);
 
 /* Stuff to read the mouse input to move the camera */
 GLfloat lastX = width / 2.0;
@@ -44,11 +40,15 @@ bool middleMouse = false;
 bool keys[1024];
 
 /* Set up the camera */
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 6.0f, 0.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-ThreeD_Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+ThreeD_Camera camera(cameraPos);
+
+//For calculating delta time
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
 
 int main(void)
 {
@@ -70,7 +70,7 @@ int main(void)
 	glfwMakeContextCurrent(window);
 
 	/* Set the required callback functions */
-	glfwSetKeyCallback(window, key_callback);
+	//glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_movement);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -99,19 +99,38 @@ int main(void)
 
     /* Some colours to use later */
     GLfloat red[3] = {1.0f, 0.0f, 0.0f};
-    GLfloat green[3] = {0.0f, 1.0f, 0.0f};
-    GLfloat blue[3] = {0.0f, 0.0f, 1.0f};
+    GLfloat yellow[3] = {1.0f, 1.0f, 0.0f};
+    GLfloat green[3] = {0.0f, 0.8f, 0.0f};
+    GLfloat cyan[3] = {0.0f, 0.5f, 1.0f};
     GLfloat white[3] = {1.0f, 1.0f, 1.0f};
 
 	/* Create a sphere object*/
 	int segments = 10;
 	int rings = 10;
-	double radius = 1.0;
+	double radius = 2.0;
     TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
     GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
     /* Create the normals object for the sphere */
     Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.2), red);
     GraphicsObject sphereNormalsObject(&sphereNormalsMesh, glm::vec3(0.0f), glm::quat());
+
+    /* Create some spheres for a solar system */
+    std::vector<GraphicsObject> solarSystem;
+
+    TriangleMesh sun(GetSpherePhong(20, 20, 1.0), "_", yellow);
+    solarSystem.push_back(GraphicsObject(&sun, glm::vec3(0.0f), glm::quat()));
+
+    TriangleMesh smallPlanet(GetSpherePhong(10, 10, 0.3), "_", red);
+    solarSystem.push_back(GraphicsObject(&smallPlanet, glm::vec3(2.0f, 0.0f, 0.0f), glm::quat()));
+
+    TriangleMesh bigPlanet(GetSpherePhong(10, 10, 0.5), "_", cyan);
+    solarSystem.push_back(GraphicsObject(&bigPlanet, glm::vec3(4.0f, 0.0f, 0.0f), glm::quat()));
+
+    TriangleMesh moon(GetSpherePhong(5, 5, 0.1), "_", green);
+    solarSystem.push_back(GraphicsObject(&moon, glm::vec3(4.8f, 0.0f, 0.0f), glm::quat()));
+
+    TriangleMesh tinyPlanet(GetSpherePhong(8, 8, 0.2), "_", white);
+    solarSystem.push_back(GraphicsObject(&tinyPlanet, glm::vec3(7.0f, 0.0f, 0.0f), glm::quat()));
 
     /* Create a textured box */
     TriangleMesh cubeMesh(GetCubeGeometry(), "Images/crate.png", white);
@@ -120,6 +139,11 @@ int main(void)
 	/* Main loop */
 	while(!glfwWindowShouldClose(window))
 	{
+	    //Calculate the time since the last frame
+		GLfloat currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		glfwPollEvents();
 
 		/*ImGUI UI code*/
@@ -156,6 +180,8 @@ int main(void)
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.Fov), (GLfloat)width / (GLfloat)width, 0.1f, 100.0f);
 
+		/* Scene switcher */
+		//Get it? Because it's a switch statement.
 		switch(e)
 		{
         case 0:
@@ -171,10 +197,14 @@ int main(void)
             sphereObject.Draw(phongShader, view, projection);
             sphereNormalsObject.Draw(phongShader, view, projection);
             break;
+        case 3:
+            renderAnimation(solarSystem, phongShader, view, projection);
+            break;
         case 4:
             textureShader.Use();
             cubeObject.Draw(textureShader, view, projection);
 		}
+		//...sorry.
 
         // ImGui functions end here
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -186,6 +216,45 @@ int main(void)
 	/* Terminate properly */
 	glfwTerminate();
 	return 0;
+}
+
+/*
+ * Draw a solar system
+ * Order: Sun - Small planet - Large planet - LP moon - Tiny planet
+ */
+void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::mat4 view, glm::mat4 projection)
+{
+    if(objects.size() >= 5)
+    {
+        /*Draw wireframes */
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        shader.Use();
+
+        glm::mat4 smallPlanet_Model;
+        smallPlanet_Model = glm::rotate(smallPlanet_Model, (float)glfwGetTime() * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        smallPlanet_Model = glm::translate(smallPlanet_Model, glm::vec3(2.0f, 0.0f, 0.0f));
+        //smallPlanet_Model = glm::rotate(smallPlanet_Model, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 1.0f));
+        //smallPlanet_Model = glm::rotate(smallPlanet_Model, (float)glfwGetTime() * 10, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glm::mat4 largePlanet_Model;
+        largePlanet_Model = glm::rotate(largePlanet_Model, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        largePlanet_Model = glm::translate(largePlanet_Model, glm::vec3(4.0f, 0.0f, 0.0f));
+
+        glm::mat4 moon_Model;
+        moon_Model = glm::rotate(largePlanet_Model, (float)glfwGetTime() * glm::radians(60.0f), glm::normalize(glm::vec3(0.0f, 1.0f, 1.0f)));
+        moon_Model = glm::translate(moon_Model, glm::vec3(0.8f, 0.0f, 0.0f));
+
+        glm::mat4 tinyPlanet_Model;
+        tinyPlanet_Model = glm::rotate(tinyPlanet_Model, glm::radians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        tinyPlanet_Model = glm::rotate(tinyPlanet_Model, (float)glfwGetTime() * glm::radians(40.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        tinyPlanet_Model = glm::translate(tinyPlanet_Model, glm::vec3(7.0f, 0.0f, 0.0f));
+
+        objects[0].Draw(shader, view, projection);
+        objects[1].Draw(shader, smallPlanet_Model, view, projection);
+        objects[2].Draw(shader, largePlanet_Model, view, projection);
+        objects[3].Draw(shader, moon_Model, view, projection);
+        objects[4].Draw(shader, tinyPlanet_Model, view, projection);
+    }
 }
 
 /*
@@ -232,6 +301,7 @@ void mouse_movement(GLFWwindow *window, double xPos, double yPos)
 	//Update previous
 	lastX = xPos;
 	lastY = yPos;
+
 
 	if (middleMouse)
 	{
