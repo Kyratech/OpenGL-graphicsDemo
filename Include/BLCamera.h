@@ -11,8 +11,8 @@ enum Camera_Directions
 	RIGHT
 };
 
-const GLfloat PITCH_DEFAULT = -90.0f;
-const GLfloat YAW_DEFAULT = 0.0f;
+const GLfloat PITCH_DEFAULT = -45.0f;
+const GLfloat YAW_DEFAULT = 20.0f;
 const GLfloat PAN_SPEED_DEFAULT = 0.01f;
 const GLfloat SENSITIVITY_DEFAULT = 0.25f;
 const GLfloat V_FOV_DEFAULT = 60.0f;

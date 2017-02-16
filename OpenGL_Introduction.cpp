@@ -40,9 +40,7 @@ bool middleMouse = false;
 bool keys[1024];
 
 /* Set up the camera */
-glm::vec3 cameraPos = glm::vec3(0.0f, 6.0f, 0.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 10.0f, 0.0f);
 
 ThreeD_Camera camera(cameraPos);
 
