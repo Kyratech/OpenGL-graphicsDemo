@@ -48,6 +48,10 @@ ThreeD_Camera camera(cameraPos);
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
+//For scene selection
+static int e = 0;
+bool stillRunning = true;
+
 int main(void)
 {
     /* Attempt to initialise GLFW3, the window manager */
@@ -68,7 +72,7 @@ int main(void)
 	glfwMakeContextCurrent(window);
 
 	/* Set the required callback functions */
-	//glfwSetKeyCallback(window, key_callback);
+	glfwSetKeyCallback(window, key_callback);
 	glfwSetCursorPosCallback(window, mouse_movement);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -109,7 +113,7 @@ int main(void)
     TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
     GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
     /* Create the normals object for the sphere */
-    Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.2), red);
+    Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.4), red);
     GraphicsObject sphereNormalsObject(&sphereNormalsMesh, glm::vec3(0.0f), glm::quat());
 
     /* Create some spheres for a solar system */
@@ -135,7 +139,7 @@ int main(void)
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
-	while(!glfwWindowShouldClose(window))
+	while(!glfwWindowShouldClose(window) && stillRunning)
 	{
 	    //Calculate the time since the last frame
 		GLfloat currentFrame = glfwGetTime();
@@ -152,7 +156,7 @@ int main(void)
 
 		ImGui::Text("Scene selection");
 
-		static int e = 0;
+
         ImGui::RadioButton("A: Sphere", &e, 0);
         ImGui::RadioButton("B: Sphere normals", &e, 1);
         ImGui::RadioButton("C: Shaded sphere", &e, 2);
@@ -267,6 +271,20 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	if (action == GLFW_PRESS)
 	{
 		keys[key] = true;
+
+		//Additional checks for scene selection
+		if(keys[GLFW_KEY_A])
+            e = 0;
+        else if(keys[GLFW_KEY_B])
+            e = 1;
+        else if(keys[GLFW_KEY_C])
+            e = 2;
+        else if(keys[GLFW_KEY_D])
+            e = 3;
+        else if(keys[GLFW_KEY_E])
+            e = 4;
+        else if(keys[GLFW_KEY_Q] || keys[GLFW_KEY_ESCAPE])
+            stillRunning = false; //Set the flag to close next frame
 	}
 	else if (action == GLFW_RELEASE)
 	{
