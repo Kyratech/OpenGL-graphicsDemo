@@ -9,6 +9,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "ShaderLoader.h"
+#include "BLCamera.h"
+
+//static const AMBIENT_STRENGTH = 0.1f;
+static const glm::vec3 LIGHT_COLOUR = glm::vec3(1.0f, 1.0f, 1.0f);
+static const glm::vec3 LIGHT_POS = {-6.64463f, 7.07107f, -2.41845f};
 
 struct Vertex
 {
@@ -16,5 +21,10 @@ struct Vertex
     GLdouble normal[3];
     GLfloat textureCoords[2];
 };
+
+/* Set up the camera */
+glm::vec3 cameraPos = glm::vec3(0.0f, 10.0f, 0.0f);
+
+ThreeD_Camera camera(cameraPos);
 
 #endif // INTRO_H

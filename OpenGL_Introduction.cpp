@@ -13,7 +13,6 @@
 #include "Include/TriangleMesh.h"
 #include "Include/LineArray.h"
 #include "Include/GraphicsObject.h"
-#include "Include/BLCamera.h"
 
 /* Screen parameters */
 const int width = 800;
@@ -40,10 +39,7 @@ bool middleMouse = false;
 //Key pressed flags
 bool keys[1024];
 
-/* Set up the camera */
-glm::vec3 cameraPos = glm::vec3(0.0f, 10.0f, 0.0f);
 
-ThreeD_Camera camera(cameraPos);
 
 //For calculating delta time
 GLfloat deltaTime = 0.0f;
@@ -99,6 +95,7 @@ int main(void)
     /* Load the shader program */
 	Shader textureShader("Shaders/TexturedDefault.vert", "Shaders/TexturedDefault.frag");
 	Shader phongShader("Shaders/UntexturedPhong.vert", "Shaders/UntexturedPhong.frag");
+	Shader unshadedShader("Shaders/UnshadedDefault.vert", "Shaders/UnshadedDefault.frag");
 
     /* Some colours to use later */
     GLfloat red[3] = {1.0f, 0.0f, 0.0f};
@@ -193,22 +190,22 @@ int main(void)
         case 0:
             /*Draw wireframes */
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            phongShader.Use();
-            sphereObject.Draw(phongShader, view, projection);
+            unshadedShader.Use();
+            sphereObject.Draw(unshadedShader, view, projection);
             break;
         case 1:
             /*Draw wireframes */
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            phongShader.Use();
-            sphereObject.Draw(phongShader, view, projection);
-            sphereNormalsObject.Draw(phongShader, view, projection);
+            unshadedShader.Use();
+            sphereObject.Draw(unshadedShader, view, projection);
+            sphereNormalsObject.Draw(unshadedShader, view, projection);
             break;
         case 2:
             phongShader.Use();
             sphereObject.Draw(phongShader, view, projection);
             break;
         case 3:
-            renderAnimation(solarSystem, phongShader, view, projection);
+            renderAnimation(solarSystem, unshadedShader, view, projection);
             break;
         case 4:
             textureShader.Use();

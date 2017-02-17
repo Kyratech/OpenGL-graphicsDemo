@@ -43,11 +43,18 @@ public:
 		this->Pitch = pitch;
 		Distance = glm::length(this->Position - this->Target);
 		this->updateCameraVectors();
+
+		std::cout << "CameraLocation: " << Position.x << "," << Position.y << "," << Position.z << std::endl;
 	}
 
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(this->Position, this->Target, this->Up);
+	}
+
+	glm::vec3 GetCameraPosition()
+	{
+	    return Position;
 	}
 
 	void move_camera(GLfloat deltaX, GLfloat deltaY)

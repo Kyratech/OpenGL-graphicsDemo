@@ -39,6 +39,9 @@ public:
         GLint mvpLocation = glGetUniformLocation(shader.getShaderProgram(), "MVPmatrix");
         glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(MVP));
 
+        GLint modelLocation = glGetUniformLocation(shader.getShaderProgram(), "modelMatrix");
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+
         mesh->Draw(shader);
     }
 
