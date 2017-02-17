@@ -111,7 +111,7 @@ int main(void)
 	int segments = 30;
 	int rings = 10;
 	double radius = 2.0;
-    TriangleMesh sphereMesh(GetConePhong(segments, 1.0f, radius), "Images/crate.png", white);
+    TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
     GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
     /* Create the normals object for the sphere */
     Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.4), red);
@@ -125,6 +125,9 @@ int main(void)
 
     TriangleMesh smallPlanet(GetSpherePhong(10, 10, 0.3), "_", red);
     solarSystem.push_back(GraphicsObject(&smallPlanet, glm::vec3(2.0f, 0.0f, 0.0f), glm::quat()));
+
+    TriangleMesh smallCone(GetConePhong(10, 1.0, 0.5), "_", white);
+    solarSystem.push_back(GraphicsObject(&smallCone, glm::vec3(2.0f, 0.0f, 0.0f), glm::quat()));
 
     TriangleMesh bigPlanet(GetSpherePhong(10, 10, 0.5), "_", cyan);
     solarSystem.push_back(GraphicsObject(&bigPlanet, glm::vec3(4.0f, 0.0f, 0.0f), glm::quat()));
@@ -200,6 +203,10 @@ int main(void)
             sphereObject.Draw(phongShader, view, projection);
             sphereNormalsObject.Draw(phongShader, view, projection);
             break;
+        case 2:
+            phongShader.Use();
+            sphereObject.Draw(phongShader, view, projection);
+            break;
         case 3:
             renderAnimation(solarSystem, phongShader, view, projection);
             break;
@@ -227,7 +234,7 @@ int main(void)
  */
 void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::mat4 view, glm::mat4 projection)
 {
-    if(objects.size() >= 5)
+    if(objects.size() >= 6)
     {
         /*Draw wireframes */
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -238,6 +245,10 @@ void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::ma
         smallPlanet_Model = glm::translate(smallPlanet_Model, glm::vec3(2.0f, 0.0f, 0.0f));
         //smallPlanet_Model = glm::rotate(smallPlanet_Model, glm::radians(10.0f), glm::vec3(0.0f, 1.0f, 1.0f));
         //smallPlanet_Model = glm::rotate(smallPlanet_Model, (float)glfwGetTime() * 10, glm::vec3(0.0f, 1.0f, 0.0f));
+
+        glm::mat4 smallCone_Model;
+        smallCone_Model = glm::rotate(smallCone_Model, (float)glfwGetTime() * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        smallCone_Model = glm::translate(smallCone_Model, glm::vec3(0.0f, -2.0f, 0.0f));
 
         glm::mat4 largePlanet_Model;
         largePlanet_Model = glm::rotate(largePlanet_Model, (float)glfwGetTime() * glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -254,9 +265,10 @@ void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::ma
 
         objects[0].Draw(shader, view, projection);
         objects[1].Draw(shader, smallPlanet_Model, view, projection);
-        objects[2].Draw(shader, largePlanet_Model, view, projection);
-        objects[3].Draw(shader, moon_Model, view, projection);
-        objects[4].Draw(shader, tinyPlanet_Model, view, projection);
+        objects[2].Draw(shader, smallCone_Model, view, projection);
+        objects[3].Draw(shader, largePlanet_Model, view, projection);
+        objects[4].Draw(shader, moon_Model, view, projection);
+        objects[5].Draw(shader, tinyPlanet_Model, view, projection);
     }
 }
 
