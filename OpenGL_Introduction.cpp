@@ -9,6 +9,7 @@
 #include "Include/CubeGeometry.h"
 #include "Include/PlaneGeomtery.h"
 #include "Include/UVSphereGeometry.h"
+#include "Include/ConeGeometry.h"
 #include "Include/TriangleMesh.h"
 #include "Include/LineArray.h"
 #include "Include/GraphicsObject.h"
@@ -107,10 +108,10 @@ int main(void)
     GLfloat white[3] = {1.0f, 1.0f, 1.0f};
 
 	/* Create a sphere object*/
-	int segments = 10;
+	int segments = 30;
 	int rings = 10;
 	double radius = 2.0;
-    TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
+    TriangleMesh sphereMesh(GetConePhong(segments, 1.0f, radius), "Images/crate.png", white);
     GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
     /* Create the normals object for the sphere */
     Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.4), red);
