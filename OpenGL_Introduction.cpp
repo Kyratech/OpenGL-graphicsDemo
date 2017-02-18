@@ -136,7 +136,7 @@ int main(void)
     solarSystem.push_back(GraphicsObject(&tinyPlanet, glm::vec3(7.0f, 0.0f, 0.0f), glm::quat()));
 
     /* Create a textured box */
-    TriangleMesh cubeMesh(GetCubeGeometry(), "Images/crate.png", white);
+    TriangleMesh cubeMesh(GetCubeGeometry(3), "Images/crate.png", white);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
