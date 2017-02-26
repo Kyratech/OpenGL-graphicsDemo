@@ -232,7 +232,7 @@ int main(void)
 
 /*
  * Draw a solar system
- * Order: Sun - Small planet - Large planet - LP moon - Tiny planet
+ * Order: Sun - Small planet - Cone thing - Large planet - LP moon - Tiny planet
  */
 void renderAnimation(std::vector<GraphicsObject> objects, Shader shader, glm::mat4 view, glm::mat4 projection)
 {
@@ -298,6 +298,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             e = 3;
         else if(keys[GLFW_KEY_E])
             e = 4;
+        else if(keys[GLFW_KEY_F])
+            e = 5;
         else if(keys[GLFW_KEY_Q] || keys[GLFW_KEY_ESCAPE])
             stillRunning = false; //Set the flag to close next frame
 	}
