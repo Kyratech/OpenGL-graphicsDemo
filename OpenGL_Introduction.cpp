@@ -13,6 +13,7 @@
 #include "Include/TriangleMesh.h"
 #include "Include/LineArray.h"
 #include "Include/GraphicsObject.h"
+#include "Include/OBJMesh.h"
 
 /* Screen parameters */
 const int width = 800;
@@ -136,8 +137,12 @@ int main(void)
     solarSystem.push_back(GraphicsObject(&tinyPlanet, glm::vec3(7.0f, 0.0f, 0.0f), glm::quat()));
 
     /* Create a textured box */
-    TriangleMesh cubeMesh(GetCubeGeometry(3), "Images/crate.png", white);
+    TriangleMesh cubeMesh(GetCubeGeometry(3), "Images/glowstone.png", white);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
+
+    /* Load in a obj file */
+    OBJMesh thunderbirdMesh("Images/thunderbird.obj", "Images/thunderbird.png", white);
+    GraphicsObject thunderbirdObject(&thunderbirdMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
 	while(!glfwWindowShouldClose(window) && stillRunning)
@@ -163,11 +168,7 @@ int main(void)
         ImGui::RadioButton("C: Shaded sphere", &e, 2);
         ImGui::RadioButton("D: Animated scene", &e, 3);
         ImGui::RadioButton("E: Textured box", &e, 4);
-
-		if (ImGui::Button("Reset camera"))
-		{
-			//TODO: reset camera
-		}
+        ImGui::RadioButton("F: Imported mesh", &e, 5);
 
 		ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
 		ImGui::End();
@@ -210,6 +211,10 @@ int main(void)
         case 4:
             textureShader.Use();
             cubeObject.Draw(textureShader, view, projection);
+            break;
+        case 5:
+            textureShader.Use();
+            thunderbirdObject.Draw(textureShader, view, projection);
 		}
 		//...sorry.
 

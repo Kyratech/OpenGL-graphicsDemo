@@ -11,6 +11,9 @@
 #include "ShaderLoader.h"
 #include "BLCamera.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 //static const AMBIENT_STRENGTH = 0.1f;
 static const glm::vec3 LIGHT_COLOUR = glm::vec3(0.8f, 0.8f, 0.8f);
 static const glm::vec3 LIGHT_POS = {-6.64463f, 7.07107f, -2.41845f};
