@@ -3,17 +3,17 @@
 #include <vector>
 
 //GUI
-#include "Include/ImGUI/imgui.h"
-#include "Include/ImGUI/imgui_impl_glfw_gl3.h"
+#include "include/ImGUI/imgui.h"
+#include "include/ImGUI/imgui_impl_glfw_gl3.h"
 
-#include "Include/CubeGeometry.h"
-#include "Include/PlaneGeomtery.h"
-#include "Include/UVSphereGeometry.h"
-#include "Include/ConeGeometry.h"
-#include "Include/TriangleMesh.h"
-#include "Include/LineArray.h"
-#include "Include/GraphicsObject.h"
-#include "Include/OBJMesh.h"
+#include "include/CubeGeometry.h"
+#include "include/PlaneGeomtery.h"
+#include "include/UVSphereGeometry.h"
+#include "include/ConeGeometry.h"
+#include "include/TriangleMesh.h"
+#include "include/LineArray.h"
+#include "include/GraphicsObject.h"
+#include "include/OBJMesh.h"
 
 /* Screen parameters */
 const int width = 800;
@@ -94,9 +94,9 @@ int main(void)
 	bool show_guiWindow = true;
 
     /* Load the shader program */
-	Shader textureShader("Shaders/TexturedDefault.vert", "Shaders/TexturedDefault.frag");
-	Shader phongShader("Shaders/UntexturedPhong.vert", "Shaders/UntexturedPhong.frag");
-	Shader unshadedShader("Shaders/UnshadedDefault.vert", "Shaders/UnshadedDefault.frag");
+	Shader textureShader("shaders/TexturedDefault.vert", "shaders/TexturedDefault.frag");
+	Shader phongShader("shaders/UntexturedPhong.vert", "shaders/UntexturedPhong.frag");
+	Shader unshadedShader("shaders/UnshadedDefault.vert", "shaders/UnshadedDefault.frag");
 
     /* Some colours to use later */
     GLfloat red[3] = {1.0f, 0.0f, 0.0f};
@@ -109,7 +109,7 @@ int main(void)
 	int segments = 30;
 	int rings = 10;
 	double radius = 2.0;
-    TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "Images/crate.png", white);
+    TriangleMesh sphereMesh(GetSpherePhong(segments, rings, radius), "images/crate.png", white);
     GraphicsObject sphereObject(&sphereMesh, glm::vec3(0.0f), glm::quat());
     /* Create the normals object for the sphere */
     Lines sphereNormalsMesh(GetSphereNormalLines(segments, rings, radius, 0.4), red);
@@ -137,11 +137,11 @@ int main(void)
     solarSystem.push_back(GraphicsObject(&tinyPlanet, glm::vec3(7.0f, 0.0f, 0.0f), glm::quat()));
 
     /* Create a textured box */
-    TriangleMesh cubeMesh(GetCubeGeometry(3), "Images/glowstone.png", white);
+    TriangleMesh cubeMesh(GetCubeGeometry(3), "images/glowstone.png", white);
     GraphicsObject cubeObject(&cubeMesh, glm::vec3(0.0f), glm::quat());
 
     /* Load in a obj file */
-    OBJMesh thunderbirdMesh("Images/thunderbird.obj", "Images/thunderbird.png", white);
+    OBJMesh thunderbirdMesh("models/thunderbird.obj", "images/thunderbird.png", white);
     GraphicsObject thunderbirdObject(&thunderbirdMesh, glm::vec3(0.0f), glm::quat());
 
 	/* Main loop */
