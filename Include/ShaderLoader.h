@@ -1,3 +1,9 @@
+/*
+ * Used techniques to compile shader program as described in online tutorial:
+ * https://learnopengl.com/#!Getting-started/Shaders
+ * As such, this class contains code pretty much the same as the tutorial that I followed
+ */
+
 #ifndef SHADER_H
 #define SHADER_H
 
@@ -12,14 +18,15 @@ class Shader
 {
 	public:
 		GLuint ProgramID;
+		/* Constructor does all of the work */
 		Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 		{
-			// 1. Retrieve the vertex/fragment source code from filePath
 			std::string vertexCode;
 			std::string fragmentCode;
 			std::ifstream vShaderFile;
 			std::ifstream fShaderFile;
-			// ensures ifstream objects can throw exceptions:
+
+			//Allow the input streams to throw exceptions
 			vShaderFile.exceptions(std::ifstream::badbit);
 			fShaderFile.exceptions(std::ifstream::badbit);
 			try
@@ -31,24 +38,23 @@ class Shader
 				// Read file's buffer contents into streams
 				vShaderStream << vShaderFile.rdbuf();
 				fShaderStream << fShaderFile.rdbuf();
-				// close file handlers
+				// Close files
 				vShaderFile.close();
 				fShaderFile.close();
-				// Convert stream into GLchar array
 				vertexCode = vShaderStream.str();
 				fragmentCode = fShaderStream.str();
 			}
 			catch (std::ifstream::failure e)
 			{
-				std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+				std::cout << "Shader files not correctly read" << std::endl;
 			}
 			const GLchar* vShaderCode = vertexCode.c_str();
 			const GLchar* fShaderCode = fragmentCode.c_str();
 
-			// 2. Compile shaders
+			//Set up the shader program
 			GLuint vertex, fragment;
 			GLint success;
-			GLchar infoLog[512];
+			GLchar log[512];
 
 			// Vertex Shader
 			vertex = glCreateShader(GL_VERTEX_SHADER);
@@ -58,8 +64,8 @@ class Shader
 			glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
 			if (!success)
 			{
-				glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-				std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+				glGetShaderInfoLog(vertex, 512, NULL, log);
+				std::cout << "Vertex shader failed to compile\n" << log << std::endl;
 			};
 
 			// Fragment Shader
@@ -70,8 +76,8 @@ class Shader
 			glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
 			if (!success)
 			{
-				glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-				std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+				glGetShaderInfoLog(fragment, 512, NULL, log);
+				std::cout << "Fragment shader failed to compile\n" << log << std::endl;
 			}
 
 			// Shader Program
@@ -83,8 +89,8 @@ class Shader
 			glGetProgramiv(this->ProgramID, GL_LINK_STATUS, &success);
 			if (!success)
 			{
-				glGetProgramInfoLog(this->ProgramID, 512, NULL, infoLog);
-				std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+				glGetProgramInfoLog(this->ProgramID, 512, NULL, log);
+				std::cout << "Shader program failed to link\n" << log << std::endl;
 			}
 
 			// Delete the shaders as they're linked into our program now and no longer necessery
