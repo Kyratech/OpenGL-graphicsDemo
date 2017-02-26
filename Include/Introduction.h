@@ -12,7 +12,7 @@
 #include "BLCamera.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "stb_image/stb_image.h"
 
 //static const AMBIENT_STRENGTH = 0.1f;
 static const glm::vec3 LIGHT_COLOUR = glm::vec3(0.8f, 0.8f, 0.8f);
